@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="save_dir" default="/home/tl/data/fisheye/2020-04-08-18-06-53"/>
+  <arg name="filename" default="/home/tl/data/fisheye/2020-04-08-18-06-53.bag"/>
+  <arg name="img_format" default="mono16"/>
+  <arg name="desired_topic" default="image_rect_raw"/>
+  <arg name="index_format" default="06d"/>
+  <arg name="view_image" default="0"/>
+  
+  <node name="bag2img" pkg="bag2img" type="bag2img.py"
+	respawn="false" output="screen">
+    <param name="save_dir" type="str" value="$(arg save_dir)"/>
+    <param name="filename" type="str" value="$(arg filename)"/>
+    <param name="img_format" type="str" value="$(arg img_format)"/>
+    <param name="desired_topic" type="str" value="$(arg desired_topic)"/>
+    <param name="index_format" type="str" value="$(arg index_format)"/>
+    <param name="view_image" type="int" value="$(arg view_image)"/>
+    
+  </node>
+</launch>
