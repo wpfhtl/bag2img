@@ -25,6 +25,7 @@ class ImageCreator():
     desired_topic = "image_rect_raw"
     index_format = "06d"
     view_image = 0
+    save_skip = 2
     image_index = 0
 
     # Must have __init__(self) function for a class, similar to a C++ class constructor.
@@ -37,7 +38,8 @@ class ImageCreator():
             desired_topic = rospy.get_param('desired_topic')
             index_format = rospy.get_param('index_format')
             view_image = rospy.get_param('view_image')
-            rospy.loginfo("save to %s, bag filename = %s, image format is %s, desired_topic is %s, index format is %s, view image flag is %d", save_dir, filename, img_format, desired_topic, index_format, view_image)
+            save_skip = rospy.get_param('save_skip')
+            rospy.loginfo("save to %s, bag filename = %s, image format is %s, desired_topic is %s, index format is %s, view image flag is %d, save an image each %d frames", save_dir, filename, img_format, desired_topic, index_format, view_image, save_skip)
         # Get parameters as arguments to 'rosrun my_package bag_to_images.py <save_dir> <filename>', where save_dir and filename exist relative to this executable file.
         else:
             save_dir = sys.argv[1]  # os.path.join(sys.path[0], sys.argv[1])
@@ -46,7 +48,8 @@ class ImageCreator():
             desired_topic = sys.argv[4]
             index_format = sys.argv[5]
             view_image = int(sys.argv[6])
-            rospy.loginfo("save to %s, bag filename = %s, image format is %s, desired_topic is %s, index format is %s, view image flag is %d", save_dir, filename, img_format, desired_topic, index_format, view_image)
+            save_skip = int(sys.argv[7])
+            rospy.loginfo("save to %s, bag filename = %s, image format is %s, desired_topic is %s, index format is %s, view image flag is %d, save an image each %d frames", save_dir, filename, img_format, desired_topic, index_format, view_image, save_skip)
 
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
@@ -75,7 +78,9 @@ class ImageCreator():
                         image_name = str(save_dir) + "/" + topic_parts[-2] + "-" + format(self.image_index, self.index_format) + "-" + timestr + self.image_type
                     else:
                         image_name = str(save_dir) + "/" + topic_parts[-2] + "-" + timestr + self.image_type
-                    cv2.imwrite(image_name, cv_image)
+                    
+                    if self.image_index % save_skip == 0 or self.image_index % save_skip == 1:
+                        cv2.imwrite(image_name, cv_image)
                     # rospy.loginfo("save image to %s", image_name)
                     self.image_index = self.image_index + 1
 
